@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulateur Retraite - Salarié du Privé</title>
+    <script src="https://cdn.plot.ly/plotly-l    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #ecf0f1;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 6px 6px 0 0;
+        }
+        .tab-button.active { background-color: white; font-weight: bold; }
+        .tab-content { display: none; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 0 6px 6px 6px; }
+        .tab-content.active { display: block; }
+        form { max-width: 800px; }
+        fieldset { border: 1px solid #ccc; margin-bottom: 20px; padding: 10px; border-radius: 6px; }
+        legend { font-weight: bold; color: #2c3e50; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type=number] { width: 100%; padding: 8px; margin-top: 4px; }
+        input[type=submit] { background-color: #2c3e50; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 20px; }
+        .tooltip { font-size: 0.9em; color: #555; }
+        a.legal-link { font-size: 0.85em; color: #2980b9; text-decoration: none; }
+        .disclaimer { background-color: #ffeaa7; padding: 10px; border-left: 5px solid #fdcb6e; margin-bottom: 20px; border-radius: 6px; }
+        .chart { margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <h1>Simulateur de Retraite - Salarié du Privé</h1>
+    <div class="disclaimer">
+        ⚠️ Ce simulateur est en cours de rédaction. Les résultats sont indicatifs et ne constituent pas un calcul officiel.
+    </div>
+
+    <div class="tabs">
+        <div class="tab-button active" data-tab="formulaire">Formulaire</div>
+        <div class="tab-button" data-tab="resultats">Résultats</div>
+        <div class="tab-button" data-tab="legislation">Rappels légaux</div>
+    </div>
+
+    <div class="tab-content active" id="formulaire">
+        <form id="retraiteForm">
+            <fieldset>
+                <legend>Données salariales</legend>
+                <label>Salaire annuel moyen (€): <span class="tooltip">Moyenne des 25 meilleures années</span></label>
+                <input type="number" name="sam" value="30000" step="100">
+                <label>Taux de liquidation (%): <span class="tooltip">Taux plein = 50% <a class="legal-link" href="https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000781]</a></span></label>
+                <input type="number" name="taux" value="50" step="0.1">
+                <label>Salaire mensuel brut (€): <span class="tooltip">Dernier salaire mensuel</span></label>
+                <input type="number" name="salaire_mensuel" value="2700" step="100">
+            </fieldset>
+
+            <fieldset>
+                <legend>Durée d'assurance</legend>
+                <label>Trimestres validés: <span class="tooltip">Trimestres cotisés et assimilés</span></label>
+                <input type="number" name="trimestres_valides" value="160">
+                <label>Trimestres requis: <span class="tooltip">Selon année de naissance (ex: 172) <a class="legal-link" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047625502" target
+                <input type="number" name="trimestres_requis" value="172">
+                <label>Trimestres avant 20 ans: <span class="tooltip">Pour départ anticipé carrière longue</span></label>
+                <input type="number" name="trimestres_avant_20_ans" value="6">
+            </fieldset>
+
+            <fieldset>
+                <legend>Retraite complémentaire</legend>
+                <label>Points acquis: <span class="tooltip">Points Agirc-Arrco</span></label>
+                <input type="number" name="points" value="4200">
+                <label>Valeur du point (€): <span class="tooltip">Ex: 1.4159 € <a class="legal-link" href="https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006141722/2025-05-01/" target="_l>
+                <input type="number" name="valeur_point" value="1.4159" step="0.0001">
+            </fieldset>
+
+            <fieldset>
+                <legend>Situation personnelle</legend>
+                <label>Ancienneté (années): <span class="tooltip">Utilisée pour calcul de l'indemnité de départ <a class="legal-link" href="https://www.legifrance.gouv.fr/codes/id/LEGISCTA000019225845" target="_el>
+                <input type="number" name="anciennete" value="15" step="1">
+                <label>Âge actuel:</label>
+                <input type="number" name="age" value="60">
+                <label>Temps partiel (ex: 0.6 = 60%): <span class="tooltip">Pour retraite progressive <a class="legal-link" href="https://www.legifrance.gouv.fr/loda/id/JORFTEXT000051942071/" target="_              <input type="number" name="temps_partiel" value="0.6" step="0.1">
+            </fieldset>
+
+            <input type="submit" value="Calculer">
+        </form>
+    </div>
+
+    <div class="tab-content" id="resultats">
+        <div id="resultDetails"></div>
+        <div id="resultChart" class="chart"></div>
+    </div>
+
+    <div class="tab-content" id="legislation">
+        <ul>
+            <li><a class="legal-link" href="https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000781627/2023-12-03/" targetaites</a></li>
+            <li><a class="legal-link" href="https://www.legifrance.gouv.fr2Décret 2023-435 sur les trimestres requis</a></li>
+            <li><a class="legal-link" href="https://www.legifrance.gouv.fr/codes/id/LEG/CSS L921-1 à L922-14 - Valeur du point Agirc-Arrco</a></li>
+            <li><a class="legal-link" href="https://www.legifrance.gouv.fr/codes/id travail D1237 - Indemnité de départ</a></li>
+            <li><a class="legal-link" href="https://www.legifrance.gouv.fr/loda/id/J025-681 - Retraite progressive</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Navigation par onglets
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Calcul retraite
+        document.getElementById('retraiteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const sam = parseFloat(form.sam.value);
+            const taux = parseFloat(form.taux.value) / 100;
+            const trimestres_valides = parseFloat(form.trimestres_valides.value);
+            const trimestres_requis = parseFloat(form.trimestres_requis.value);
+            const points = parseFloat(form.points.value);
+            const valeur_point = parseFloat(form.valeur_point.value);
+            const salaire_mensuel = parseFloat(form.salaire_mensuel.value);
+            const anciennete = parseFloat(form.anciennete.value);
+            const age = parseFloat(form.age.value);
+            const trimestres_avant_20_ans = parseFloat(form.trimestres_avant_20_ans.value);
+            const temps_partiel = parseFloat(form.temps_partiel.value);
+
+            const pension_base = sam * taux * (trimestres_valides / trimestres_requis);
+            const pension_complementaire = points * valeur_point;
+            const indemnite_depart = salaire_mensuel * 0.25 * anciennete;
+            const total_annuel = pension_base + pension_complementaire;
+            const total_avec_indemnite = total_annuel + indemnite_depart;
+            const retraite_progressive = (age >= 60 && temps_partiel < 1.0) ? total_annuel * temps_partiel : 0;
+            const total_tp = total_annuel * temps_partiel;
+            const depart_anticipe = (age >= 60 && trimestres_avant_20_ans >= 5 && trimestres_valides >= trimestres_requis) ? "Oui" : "Non";
+
+            // Résumé explicatif
+            document.getElementById('resultDetails').innerHTML = `
+                <h2>Résumé de votre simulation</h2>
+                <p><strong>Pension de base :</strong> ${pension_base.toFixed(2)} € par an, calculée selon votre salaire annuel moyen (${sam} €), le taux de liquidation (${(taux * 100).toFixed(1)} %) et votre durée d’assurance (${trimestres_valides}/${trimestres_requis} trimestres).</p>
+                <p><strong>Retraite complémentaire :</strong> ${pension_complementaire.toFixed(2)} € par an, basée sur ${points} points Agirc-Arrco à ${valeur_point} € le point.</p>
+                <p><strong>Indemnité de départ :</strong> ${indemnite_depart.toFixed(2)} €, calculée sur votre salaire mensuel brut (${salaire_mensuel} €) et votre ancienneté (${anciennete} ans).</p>
+                <p><strong>Total annuel estimé :</strong> ${total_annuel.toFixed(2)} € (base + complémentaire).</p>
+                <p><strong>Total avec indemnité :</strong> ${total_avec_indemnite.toFixed(2)} €.</p>
+                ${temps_partiel < 1.0 ? `<p><strong>Retraite progressive :</strong> ${retraite_progressive.toFixed(2)} € par an, selon votre temps partiel (${(temps_partiel * 100).toFixed(0)} %).</p>` : ''}
+                <p><strong>Départ anticipé carrière longue :</strong> ${depart_anticipe === "Oui" ? "✅ Oui, vous remplissez les conditions." : "❌ Non, conditions non remplies."}</p>
+            `;
+
+            // Graphique
+            const labels = [
+                "Pension base", "Pension complémentaire", "Indemnité départ",
+                "Total annuel", "Total avec indemnité", "Retraite progressive", "Temps partiel ajusté"
+            ];
+            const values = [
+                pension_base, pension_complementaire, indemnite_depart,
+                total_annuel, total_avec_indemnite, retraite_progressive, total_tp
+            ];
+
+            const data = [{
+                x: labels,
+                y: values,
+                type: 'bar',
+                marker: { color: 'steelblue' }
+            }];
+
+            const layout = {
+                title: `Résultats de la simulation (Départ anticipé : ${depart_anticipe})`,
+                yaxis: { title: 'Montants (€)' }
+            };
+
+            Plotly.newPlot('resultChart', data, layout);
+
+            // Affiche l'onglet résultats
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="resultats"]').classList.add('active');
+            document.getElementById('resultats').classList.add('active');
+        });
+    </script>
+</body>
+</html>
